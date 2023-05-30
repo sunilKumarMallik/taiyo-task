@@ -4,7 +4,9 @@ import axios from 'axios';
 
 // eslint-disable-next-line prefer-const
 let baseUrl = 'https://disease.sh/v3/covid-19';
+//common url for all the three provided data
 export async function UseFetcher(method = 'POST', url: unknown, body: unknown) {
+  //useFetcher method for fetch the api
   const apiUrl = `${baseUrl}${url}`;
   // eslint-disable-next-line no-useless-catch
   try {

@@ -5,8 +5,10 @@ export const contactSlice = createSlice({
   name: 'contact',
   initialState: {
     list: [],
+    //in contact slice The initial state of the slice, which includes a list array. where we store the contacts data
   },
   reducers: {
+    //ruducer to update the state
     addContact: (data, action) => {
       // eslint-disable-next-line no-var
       console.log(action.payload);
@@ -22,5 +24,6 @@ export const contactSlice = createSlice({
 });
 
 export const { addContact, removeContact, updateContact } = contactSlice.actions;
+//dispatch the actions and update the state
 
 export default contactSlice.reducer;

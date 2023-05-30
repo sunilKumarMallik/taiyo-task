@@ -9,6 +9,7 @@ export const countySlice = createSlice({
     world: [],
     date: [],
   },
+  // createSlice function from the @reduxjs/toolkit package. It defines the initial state and a set of reducer functions for managing the different API data slice of the Redux store.
   reducers: {
     getAllCountries: (state, action) => {
       state.countries = action.payload;
@@ -26,5 +27,6 @@ export const countySlice = createSlice({
 });
 
 export const { getAllCountries, getWorldWideData, getDate } = countySlice.actions;
+//Updating the states
 
 export default countySlice.reducer;

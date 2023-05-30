@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { Icon } from 'leaflet';
 import { useSelector, useDispatch } from 'react-redux';
 import { getAllCountries, getWorldWideData } from 'redux/slices/countrySlice';
 import { UseFetcher } from 'api-services/axios-common';
 import LineGraph from '../screens/LineGraph';
 import { useSpring, animated } from 'react-spring';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 interface CountryData {
   active: number;
@@ -16,6 +19,12 @@ interface CountryData {
   todayCases: number;
   todayDeaths: number;
 }
+//dependency
+const customIcon = new Icon({
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+//marker for the map as while deploying the marker is not appered so i manually bring marker from leaflet pack
 const Loader = () => (
   <div className="flex items-center justify-center h-full mt-14">
     <div className="loader--style1 mt-14" id="Main-Loader">
@@ -62,11 +71,18 @@ const Maps: React.FC<{ countries: CountryData[] }> = ({ countries }) => {
   return (
     <div className="flex justify-center items-center mt-4">
       <MapContainer center={[0, 0]} zoom={3} style={{ height: '65vh', width: '95%' }}>
+        {/* setting up the map */}
         <TileLayer url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png" />
 
         {countries.map((country: any, index: any): any => (
-          <Marker key={index} position={[country.countryInfo.lat, country.countryInfo.long]}>
+          <Marker
+            key={index}
+            position={[country.countryInfo.lat, country.countryInfo.long]}
+            // geting those co-ordinates from api and set them up for location tracking
+            icon={customIcon}
+          >
             <Popup>
+              {/* the popup for ach country active case,recover case , and death case */}
               <div>
                 <h2>{country.country}</h2>
                 <p>Active: {country.active}</p>
@@ -84,8 +100,11 @@ const Maps: React.FC<{ countries: CountryData[] }> = ({ countries }) => {
 const MapComponent: React.FC = () => {
   const countriesData = useSelector((state: any) => state.country.countries);
   const worldWideData = useSelector((state: any) => state.country.world);
+  //set up those apis
   const [loading, setLoading] = useState<boolean>(true);
+  //loader
   const dispatch = useDispatch();
+  //despatch data
   console.log('worldWideData', worldWideData);
   useEffect(() => {
     const fetchData = async () => {
@@ -102,7 +121,7 @@ const MapComponent: React.FC = () => {
     };
     fetchData();
   }, []);
-  function Numbers({ n }) {
+  function Numbers(n: any) {
     const { number } = useSpring({
       from: { number: 0 },
       number: n,
@@ -110,33 +129,41 @@ const MapComponent: React.FC = () => {
       config: { mass: 1, tension: 100, friction: 10 },
     });
     // eslint-disable-next-line react/prop-types
-    return <animated.div>{number.to((n) => n.toFixed(0))}</animated.div>;
+    return <animated.div>{n > 0 && number.to((n) => n.toFixed(0))}</animated.div>;
   }
+
+  function isEmpty(obj: any) {
+    return Object.keys(obj).length === 0;
+  }
+  // is empty for conditional rendering as for somehow in first api call data is not coming into the apis
   return (
     <div>
-      <div className="container mx-auto">
-        <div className="flex justify-center align-middle">
-          <h1 className="text-3xl">Global Situation</h1>
+      {worldWideData && !isEmpty(worldWideData) && (
+        <div className="container mx-auto">
+          <div className="flex justify-center items-center">
+            <h1 className="text-3xl">Global Situation</h1>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12 xl:mr-9">
+            <div className="flex justify-center items-center text-2xl">Total Cases:</div>
+            <div className="flex justify-center items-center text-4xl rounded-none p-4 glass-box border-black">
+              {worldWideData?.cases}
+              {/* data binding */}
+            </div>
+            <div className="flex justify-center items-center text-2xl">Active Cases:</div>
+            <div className="flex justify-center items-center text-4xl rounded-none p-4 glass-box border-black">
+              {worldWideData?.active}
+            </div>
+            <div className="flex justify-center items-center text-2xl">Recovered:</div>
+            <div className="flex justify-center items-center text-4xl rounded-none p-4 glass-box border-black">
+              {worldWideData?.recovered}
+            </div>
+            <div className="flex justify-center items-center text-2xl">Deaths:</div>
+            <div className="flex justify-center items-center text-4xl rounded-none p-4 glass-box border-black">
+              {worldWideData?.deaths}
+            </div>
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
-          <div className="flex justify-center align-middle text-2xl">Total Cases :</div>
-          <div className="flex justify-center text-4xl rounded-none p-4 glass-box border-black">
-            {<Numbers n={worldWideData?.cases} />}
-          </div>
-          <div className="flex justify-center align-middle text-2xl">Active Cases :</div>
-          <div className="flex justify-center text-4xl rounded-none p-4 glass-box border-black ">
-            {<Numbers n={worldWideData?.active} />}
-          </div>
-          <div className="flex justify-center align-middle text-2xl">Recovered :</div>
-          <div className="flex justify-center text-4xl rounded-none p-4 glass-box border-black ">
-            {<Numbers n={worldWideData?.recovered} />}
-          </div>
-          <div className="flex justify-center align-middle text-2xl">Death :</div>
-          <div className="flex justify-center text-4xl rounded-none p-4 glass-box border-black ">
-            {<Numbers n={worldWideData?.deaths} />}
-          </div>
-        </div>
-      </div>
+      )}
       {loading ? <Loader /> : <Maps countries={countriesData} />}
 
       <LineGraph />

@@ -5,10 +5,12 @@ import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  //hooks for opening and closing sidebar
   return (
     <div style={{ zIndex: 999999 }} id="Sidebar">
       {!isOpen ? (
         <button onClick={() => setIsOpen(!isOpen)}>
+          {/* click to open the sidebar by setting the click to open */}
           <svg
             className="fixed  z-30 flex items-center cursor-pointer right-10 top-6"
             fill="#2563EB"
@@ -20,6 +22,7 @@ const Sidebar = () => {
             <rect y="30" width="100" height="10"></rect>
             <rect y="60" width="100" height="10"></rect>
           </svg>
+          {/* design for the sidebar hamburger menu */}
         </button>
       ) : (
         <div>

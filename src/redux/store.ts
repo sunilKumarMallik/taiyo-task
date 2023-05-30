@@ -1,5 +1,4 @@
 import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from './slices/counterSlice';
 import countryReducer from './slices/countrySlice';
 import storage from 'redux-persist/lib/storage';
 import { persistReducer } from 'redux-persist';
@@ -9,10 +8,11 @@ const userProfilePersistConfig = {
   key: 'userProfile',
   storage: storage,
 };
+// configuring the Redux store using the configureStore
 export default configureStore({
   reducer: {
-    counter: counterReducer,
     country: countryReducer,
+    // sets up the store with multiple reducers and enables data persistence for the contact slice using redux-persist
     contact: persistReducer(userProfilePersistConfig, contactReducer),
   },
 });

@@ -11,6 +11,7 @@ if (container) {
   const root = createRoot(container);
   root.render(
     <Provider store={store}>
+      {/* default store config for the store the state in redux */}
       <App />
     </Provider>
   );
